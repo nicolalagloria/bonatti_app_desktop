@@ -5,19 +5,23 @@ import getopt, sys
 from PIL import Image
 from io import BytesIO
 
-# BAD: use of a global variable
+# BAD: use of a global variables
 location_name = ""
+image_scale = 0
 
 # TODO: class for handling getter and setter on location 
+# TODO: enable refresh as command line parameter 
 
 def main(argv):
     location_name = argv[1]
+    image_scale = float(argv[2])
+
     my_data = get_location_image_data(location_name)
     my_width = my_data[1]
     my_height = my_data[2]
     
     # prepare the window for drawing
-    window = pyglet.window.Window(fullscreen=False, width=my_width, height=my_height)
+    window = pyglet.window.Window(fullscreen=False, width=my_width*image_scale, height=my_height*image_scale)
     # == Stuff to render the image:
     @window.event
     def on_draw():
@@ -26,6 +30,7 @@ def main(argv):
         window.clear()
         image = pyglet.image.load('noname.raw', file=img)
         sprite = pyglet.sprite.Sprite(image) 
+        sprite.scale = image_scale
         sprite.draw()
     
     @window.event
@@ -37,7 +42,7 @@ def main(argv):
         window.dispatch_event('on_draw')
         print ("Updated Image")
     
-    pyglet.clock.schedule_interval(update,60)
+    pyglet.clock.schedule_interval(update,60)   # refresh rate 60 sec
     pyglet.app.run()
     
 # TODO: refactor with class for location data 
