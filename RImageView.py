@@ -1,26 +1,32 @@
-import pyglet,urllib.request,time, getopt, sys
+import pyglet
+import urllib.request
+import time
+import getopt, sys
 from PIL import Image
 from io import BytesIO
 
+# BAD: use of a global variable
 location_name = ""
 
 # TODO: class for handling getter and setter on location 
 
 def main(argv):
     location_name = argv[1]
-    my_data = get_location_data(location_name)
-    my_width = my_data[1][0]
-    my_height = my_data[1][1]
+    my_data = get_location_image_data(location_name)
+    my_width = my_data[1]
+    my_height = my_data[2]
     
+    # prepare the window for drawing
     window = pyglet.window.Window(fullscreen=False, width=my_width, height=my_height)
     # == Stuff to render the image:
     @window.event
     def on_draw():
-        my_data = get_location_data(location_name)
+        my_data = get_location_image_data(location_name)    # still duplicate code to fix
+        img = get_raw_image(my_data[0])
         window.clear()
-        img = my_data[0]
-        image = pyglet.sprite.Sprite(pyglet.image.load('noname.png', file=img)) 
-        image.draw()
+        image = pyglet.image.load('noname.raw', file=img)
+        sprite = pyglet.sprite.Sprite(image) 
+        sprite.draw()
     
     @window.event
     def on_close():
@@ -36,32 +42,25 @@ def main(argv):
     
 # TODO: refactor with class for location data 
 
-def get_location_data(name):
+def get_location_image_data(name):
     # {location: [url, width, height]}
+    # TODO: read location data from a config file 
     location = {}
     location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
-    location["pordoi"] = ['https://vcdn.bergfex.at/webcams/archive.new/downsized/2/10882/2021/01/29/10882_2021-01-29_0915_688d47e0ed941b8b.jpg', 1280, 960]
-    
-    # get data from URL
-    web_response = urllib.request.urlopen(location[name][0])
-    
-    img_data = web_response.read()
-    img = (BytesIO(img_data))
-    res = [location[name][1], location[name][2]]
-    return img, res
+    location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
+    return location[name]
 
-def load_remote_image():
-    
-    # TODO: add information about image resolution
-    img_urls = []
-    img_urls.append('https://tl.scenaridigitali.com/trecime/images/image.jpg')
-    img_urls.append('https://vcdn.bergfex.at/webcams/archive.new/downsized/2/10882/2021/01/29/10882_2021-01-29_0915_688d47e0ed941b8b.jpg')
-    
-    web_response = urllib.request.urlopen(img_urls[1])
+def get_raw_image (url):
+    # get data from URL
+    web_response = urllib.request.urlopen(url)
     img_data = web_response.read()
     img = (BytesIO(img_data))
     return img
 
+def scale_image(img):
+    # TODO:
+    return
+        
 if __name__ == "__main__":
     main(sys.argv)
     
