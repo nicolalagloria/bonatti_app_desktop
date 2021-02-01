@@ -12,6 +12,7 @@ class LocImage(object):
     location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
     location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
     location["cinquetorri"] = ['https://s.skylinewebcams.com/webcam889.jpg', 289, 170]
+    location["lussari"] = ['https://vcdn.bergfex.at/webcams/archive.new/downsized/9/9189/2021/02/01/9189_2021-02-01_1745_688d47e0ed941b8b.jpg', 1280, 720]
 
     @classmethod
     def set_name(cls,name):
@@ -79,7 +80,8 @@ def main(argv):
     
 def get_raw_image (url):
     # get data from URL
-    web_response = urllib.request.urlopen(url)
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    web_response = urllib.request.urlopen(req)
     img_data = web_response.read()
     img = (BytesIO(img_data))
     return img
