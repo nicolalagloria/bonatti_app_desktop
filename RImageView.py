@@ -5,32 +5,64 @@ import getopt, sys
 from PIL import Image
 from io import BytesIO
 
-# BAD: use of a global variables
-location_name = ""
-image_scale = 0
 
-# TODO: class for handling getter and setter on location 
-# TODO: enable refresh as command line parameter 
+class LocImage(object):
+    # {location: [url, width, height]}  
+    location = {}
+    location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
+    location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
+    location["cinquetorri"] = ['https://s.skylinewebcams.com/webcam889.jpg', 289, 170]
 
-def main(argv):
-    location_name = argv[1]
-    image_scale = float(argv[2])
+    @classmethod
+    def set_name(cls,name):
+        cls.name = name
+        return cls.name
 
-    my_data = get_location_image_data(location_name)
-    my_width = my_data[1]
-    my_height = my_data[2]
+    @classmethod
+    def set_scale(cls,scale):
+        cls.scale = scale
+        return cls.scale
     
+    @classmethod
+    def get_url(cls):
+        return cls.location[cls.name][0]
+    
+    @classmethod
+    def get_width(cls):
+        return cls.location[cls.name][1]
+
+    @classmethod
+    def get_height(cls):  
+        return cls.location[cls.name][2]
+    
+    @classmethod 
+    def get_scale(cls):
+        return cls.scale
+    
+    @classmethod 
+    def get_name(cls):
+        return cls.name
+    
+    def __init__(self):
+        super().__init__()
+        
+def main(argv):
+
+    LocImage.set_name(argv[1])
+    LocImage.set_scale(float(argv[2]))
+
     # prepare the window for drawing
-    window = pyglet.window.Window(fullscreen=False, width=my_width*image_scale, height=my_height*image_scale)
-    # == Stuff to render the image:
+    window = pyglet.window.Window(fullscreen=False, width=LocImage.get_width()*LocImage.get_scale(), height=LocImage.get_height()*LocImage.get_scale())
+    window.set_caption("Bonatti App " + "[" + LocImage.get_name() + "]")
+    
+    # == Stuff to render in the window
     @window.event
     def on_draw():
-        my_data = get_location_image_data(location_name)    # still duplicate code to fix
-        img = get_raw_image(my_data[0])
+        img = get_raw_image(LocImage.get_url())     # pass the URL
         window.clear()
         image = pyglet.image.load('noname.raw', file=img)
         sprite = pyglet.sprite.Sprite(image) 
-        sprite.scale = image_scale
+        sprite.scale = LocImage.get_scale()
         sprite.draw()
     
     @window.event
@@ -40,31 +72,17 @@ def main(argv):
     @window.event
     def update(dt):
         window.dispatch_event('on_draw')
-        print ("Updated Image")
-    
+        print ("image updated")
+
     pyglet.clock.schedule_interval(update,60)   # refresh rate 60 sec
     pyglet.app.run()
     
-# TODO: refactor with class for location data 
-
-def get_location_image_data(name):
-    # {location: [url, width, height]}
-    # TODO: read location data from a config file 
-    location = {}
-    location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
-    location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
-    return location[name]
-
 def get_raw_image (url):
     # get data from URL
     web_response = urllib.request.urlopen(url)
     img_data = web_response.read()
     img = (BytesIO(img_data))
     return img
-
-def scale_image(img):
-    # TODO:
-    return
         
 if __name__ == "__main__":
     main(sys.argv)
