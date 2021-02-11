@@ -1,10 +1,10 @@
 import pyglet
+import argparse
 import urllib.request
 import time
 import getopt, sys
 from PIL import Image
 from io import BytesIO
-
 
 class LocImage(object):
     # {location: [url, width, height]}  
@@ -12,8 +12,6 @@ class LocImage(object):
     location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
     location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
     location["cinquetorri"] = ['https://s.skylinewebcams.com/webcam889.jpg', 289, 170]
-    location["lussari"] = ['https://vcdn.bergfex.at/webcams/archive.new/downsized/9/9189/2021/02/01/9189_2021-02-01_1745_688d47e0ed941b8b.jpg', 1280, 720]
-
     @classmethod
     def set_name(cls,name):
         cls.name = name
@@ -49,9 +47,35 @@ class LocImage(object):
         
 def main(argv):
 
-    LocImage.set_name(argv[1])
-    LocImage.set_scale(float(argv[2]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a" , "--list", help = "list all the available locations", action = "store_true")
+    parser.add_argument("-l", "--location", help = "specify the location of the webcam", default = "lavaredo")
+    parser.add_argument("-s", "--scale", type=float, help = "specify the scale of the displayed camera image", default = 1)
+    
+    args = parser.parse_args()
 
+    if args.list:
+        print("Available locations:")
+        for key in LocImage.location.keys():
+            print("\t" + key)
+        exit(0)
+        
+    try:
+        LocImage.location[args.location]
+    except KeyError:
+        print("Specified location is not avaiable\n")
+        exit(0)
+    
+    
+
+    if (args.scale < 0) or (args.scale > 5): 
+        # max value 5 is just good sense. Correct max value should be driven by image and display resoliution 
+        print("Invalid scale\n")
+        exit(0)    
+    
+    LocImage.set_name(args.location)
+    LocImage.set_scale(args.scale)
+    
     # prepare the window for drawing
     window = pyglet.window.Window(fullscreen=False, width=LocImage.get_width()*LocImage.get_scale(), height=LocImage.get_height()*LocImage.get_scale())
     window.set_caption("Bonatti App " + "[" + LocImage.get_name() + "]")
