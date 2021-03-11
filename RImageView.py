@@ -15,6 +15,8 @@ class LocImage(object):
     location["bianco_pano"]=["https://live-image.panomax.com/cams/1437/recent_reduced.jpg", 3445, 450]
     location["5torri_small"] = ['https://s.skylinewebcams.com/webcam889.jpg', 289, 170]
     location["5torri"] = ['https://www.montagnaitalia.it/webcam/original/5torri.jpg', 704, 576]
+    location["plateu_rosa"]=["https://live-image.panomax.com/cams/987/recent_reduced.jpg", 3445, 450]
+    location["bec_carre"]=["https://live-image.panomax.com/cams/1256/recent_reduced.jpg", 3445, 450]
 
     @classmethod
     def set_name(cls,name):
