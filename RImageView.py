@@ -9,7 +9,7 @@ from io import BytesIO
 class LocImage(object):
     # {location: [url, width, height]}  
     location = {}
-    location["lavaredo"] = ['https://tl.scenaridigitali.com/trecime/images/image.jpg', 1920, 1080]
+    location["lavaredo"] = ['https://images-webcams.windy.com/41/1458381541/current/full/1458381541.jpg', 1920, 1080]
     location["pordoi"] = ['https://panodata.panomax.com/cams/1343/canazei_skiarea_belvedere.jpg', 1920, 1080]
     location["helbronner"]=["https://www.lovevda.it/Media/Cache/Webcam/big_courma2.jpg", 1280, 960]
     location["bianco_pano"]=["https://live-image.panomax.com/cams/1437/recent_reduced.jpg", 3445, 450]
